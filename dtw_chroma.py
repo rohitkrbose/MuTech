@@ -5,6 +5,8 @@ import librosa as librosa
 import librosa.display
 import sys
 
+# Usage syntax:
+# python dtw_chroma.py <song_1> <song_2>
 
 # Load audio recordings
 x_1, fs = librosa.load(sys.argv[1], offset=30, duration=60)
@@ -29,17 +31,18 @@ plt.colorbar()
 plt.tight_layout()
 
 # Align Chroma Sequences
-D, wp = librosa.core.dtw(X=x_1_chroma, Y=x_2_chroma, metric='cosine') # wp stores the warp path
+D, wp = librosa.core.dtw(X=x_1_chroma, Y=x_2_chroma, metric='cosine') # D: cumulative cost matrix, wp: warp path indices
 print(D[D.shape[0]-1][D.shape[1]-1]) # last co-ordinate has the total alignment cost
 
 wp_s = np.asarray(wp) * hop_size / fs
 
+# Plot Cost Matrix
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(111)
 librosa.display.specshow(D, x_axis='time', y_axis='time', cmap='viridis_r', hop_length=hop_size)
 imax = ax.imshow(D, cmap=plt.get_cmap('viridis_r'), origin='lower', interpolation='nearest', aspect='auto')
 ax.plot(wp_s[:, 1], wp_s[:, 0], marker='o', color='r')
-plt.title('Warping Path on Acc. Cost Matrix $D$')
+plt.title('Warping Path on Cumulative Cost Matrix')
 plt.colorbar()
 
 plt.show()
